@@ -1,20 +1,63 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar";
+import { login, signup } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 const LoginSignup = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMode = () => setIsLogin(!isLogin);
 
-  const formVariants = {
-    login: { x: 0 },
-    signup: { x: "100%" }, // Slide the form to the right for signup
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-  const imageVariants = {
-    login: { x: 0 },
-    signup: { x: "-100%" }, // Slide the image to the left for signup
+    // Basic validation
+    if (!email || !password) {
+      setError("Email and Password are required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
+    // Create the payload dynamically
+    const payload = {
+      email,
+      password,
+    };
+    console.log(payload)
+
+    // if (!isLogin) {
+    //   payload.confirmPassword = confirmPassword; // Add confirmPassword if it's a signup
+    // }
+
+    try {
+      if (isLogin) {
+        // Login logic
+        await login(payload); // Pass the entire payload
+        navigate("/dashboard"); // Redirect on successful login
+      } else {
+        // Signup logic
+        await signup(payload); // Pass the entire payload
+        navigate("/dashboard"); // Redirect on successful signup
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,10 +70,10 @@ const LoginSignup = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Left Content Section (Form) */}
+          {/* Form Section */}
           <motion.div
             className="w-1/2 p-8"
-            variants={formVariants}
+            variants={{ login: { x: 0 }, signup: { x: "100%" } }}
             animate={isLogin ? "login" : "signup"}
             transition={{ duration: 0.5 }}
           >
@@ -43,8 +86,7 @@ const LoginSignup = () => {
                 : "Create an account to start managing your data."}
             </p>
 
-            <form>
-              {/* Email */}
+            <form onSubmit={handleSubmit}>
               <div className="mb-6">
                 <label
                   htmlFor="email"
@@ -55,12 +97,14 @@ const LoginSignup = () => {
                 <input
                   type="email"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full mt-2 px-4 py-2 border-2 rounded-lg focus:ring-2 focus:ring-gray-800 outline-none transition"
                   placeholder="Enter your email"
+                  required
                 />
               </div>
 
-              {/* Password */}
               <div className="mb-6">
                 <label
                   htmlFor="password"
@@ -71,12 +115,14 @@ const LoginSignup = () => {
                 <input
                   type="password"
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full mt-2 px-4 py-2 border-2 rounded-lg focus:ring-2 focus:ring-gray-800 outline-none transition"
                   placeholder="Enter your password"
+                  required
                 />
               </div>
 
-              {/* Confirm Password (Only for Signup) */}
               {!isLogin && (
                 <div className="mb-6">
                   <label
@@ -88,22 +134,26 @@ const LoginSignup = () => {
                   <input
                     type="password"
                     id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full mt-2 px-4 py-2 border-2 rounded-lg focus:ring-2 focus:ring-gray-800 outline-none transition"
                     placeholder="Confirm your password"
+                    required
                   />
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-gray-700 to-black text-white py-2 rounded-lg hover:opacity-80 transition"
+                disabled={loading}
               >
-                {isLogin ? "Login" : "Sign Up"}
+                {loading ? "Please Wait..." : isLogin ? "Login" : "Sign Up"}
               </button>
+
+              {error && <p className="text-red-500 text-center mt-4">{error}</p>}
             </form>
 
-            {/* Toggle Login/Signup */}
             <p className="text-center text-gray-600 mt-4">
               {isLogin
                 ? "Don't have an account? "
@@ -117,10 +167,10 @@ const LoginSignup = () => {
             </p>
           </motion.div>
 
-          {/* Right Picture Section (Image) */}
+          {/* Image Section */}
           <motion.div
             className="w-1/2 p-8"
-            variants={imageVariants}
+            variants={{ login: { x: 0 }, signup: { x: "-100%" } }}
             animate={isLogin ? "login" : "signup"}
             transition={{ duration: 0.5 }}
           >

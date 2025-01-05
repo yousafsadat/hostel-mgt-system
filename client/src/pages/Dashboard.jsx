@@ -4,9 +4,12 @@ import Sidebar from "../components/Dashboard/Sidebar";
 import OverviewCard from "../components/Dashboard/OverviewCard";
 import { FaBed, FaUser, FaUtensils, FaUsers } from "react-icons/fa";
 import RoomOccupancyGraph from "../components/Dashboard/Graph";
+import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
   return (
+    <>
+    <Navbar />
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-8">
@@ -31,6 +34,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
