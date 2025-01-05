@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Sidebar from '../../components/Dashboard/Sidebar';
 
 const Students = () => {
   const [students, setStudents] = useState([
@@ -8,7 +9,10 @@ const Students = () => {
   ]);
 
   return (
-    <div className="p-8">
+    <div className='flex'>
+        <Sidebar />
+
+        <div className="p-8">
       <h2 className="text-3xl font-bold text-gray-900 mb-6">Students</h2>
       
       <div className="space-y-4">
@@ -23,6 +27,7 @@ const Students = () => {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const LandingPage = () => {
   };
 
   return (
+    <div className='flex flex-col gap-4'>
+        <Navbar />
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -56,6 +59,7 @@ const LandingPage = () => {
         Proceed To Dashboard
       </motion.button>
     </motion.div>
+    </div>
   );
 };
 
